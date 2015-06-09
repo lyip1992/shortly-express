@@ -1,7 +1,7 @@
 var db = require('../config');
-var Promise = require('bluebird');
 var Link = require('./link');
 var Click = require('./click');
+var Promise = require('bluebird');
 
 var User = db.Model.extend({
   tableName: 'users',

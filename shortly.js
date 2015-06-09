@@ -61,6 +61,11 @@ app.get('/links', restrict, function(req, res) {
   });
 });
 
+app.get('/logout', function(req, res) {
+  req.session.destroy();
+  res.redirect('/');
+});
+
 app.get('/signup', function(req, res) {
   res.render('signup');
 });
@@ -83,16 +88,22 @@ app.post('/links', function(req, res) {
           return res.send(404);
         }
 
-        var link = new Link({
-          url: uri,
-          title: title,
-          base_url: req.headers.origin
-        });
+        // req.session.username
+        // console.log(req.session.user);
+        var username = new User({ username: req.session.user }).fetch()
+          .then(function(found) {
+            var link = new Link({
+              user_id: found.attributes.id,
+              url: uri,
+              title: title,
+              base_url: req.headers.origin
+            });
 
-        link.save().then(function(newLink) {
-          Links.add(newLink);
-          res.send(200, newLink);
-        });
+            link.save().then(function(newLink) {
+              Links.add(newLink);
+              res.send(200, newLink);
+            });
+          });
       });
     }
   });
