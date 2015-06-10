@@ -46,6 +46,17 @@ db.knex.schema.hasTable('clicks').then(function(exists) {
 // Add additional schema definitions below
 /************************************************************/
 
+db.knex.schema.hasTable('urls_users').then(function(exists) { // PENDING!!!!!
+  if (!exists) {
+    db.knex.schema.createTable('urls_users', function (jointable) {
+      jointable.integer('url_id');
+      jointable.integer('user_id');
+    }).then(function (jointable) {
+      console.log('Created Table', jointable);
+    });
+  }
+});
+
 db.knex.schema.hasTable('users').then(function(exists) {
   if (!exists) {
     db.knex.schema.createTable('users', function (user) {

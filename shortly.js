@@ -57,6 +57,7 @@ app.get('/create', restrict, function(req, res) {
 
 app.get('/links', restrict, function(req, res) {
   Links.reset().fetch().then(function(links) {
+    console.log(links);
     res.send(200, links.models);
   });
 });
@@ -90,18 +91,20 @@ app.post('/links', function(req, res) {
 
         // req.session.username
         // console.log(req.session.user);
-        var username = new User({ username: req.session.user }).fetch()
+        new User({ username: req.session.user }).fetch()
           .then(function(found) {
             var link = new Link({
-              user_id: found.attributes.id,
+              // user_id: found.attributes.id,
               url: uri,
               title: title,
               base_url: req.headers.origin
             });
 
             link.save().then(function(newLink) {
-              Links.add(newLink);
-              res.send(200, newLink);
+              newLink.users().attach(found).then(function(){
+                Links.add(newLink);
+                res.send(200, newLink);
+              });
             });
           });
       });
@@ -141,6 +144,7 @@ app.post('/login', function(req, res) {
       if (model.length) {
         req.session.regenerate(function() {
           req.session.user = model[0].username;
+          req.session.userid = model[0].id;
           res.redirect('/');
         });
       }
