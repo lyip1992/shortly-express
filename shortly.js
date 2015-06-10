@@ -56,9 +56,10 @@ app.get('/create', restrict, function(req, res) {
 });
 
 app.get('/links', restrict, function(req, res) {
-  Links.reset().fetch().then(function(links) {
-    console.log(links);
-    res.send(200, links.models);
+  User.forge({ id: req.session.userid }).fetch({ withRelated: ['links'] }).then(function(user) {
+    console.log(user);
+
+    res.send(200, user.relations.links);
   });
 });
 
